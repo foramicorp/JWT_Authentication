@@ -186,7 +186,14 @@ const resetPassword = async (req, res) => {
         user.otpExpires = null;
         await user.save();
 
-        res.json({ message: "Password reset successful" });
+        // SEND PASSWORD RESET CONFIRMATION MAIL
+        await sendMail(
+            user.email,
+            "Password Reset Confirmation",
+            `Hello ${user.name},\n\nYour password has been successfully reset. If you did not make this change, please contact support immediately.\n\nThank you!`
+        );
+
+        res.json({ message: "Password reset successful. A confirmation email has been sent." });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -194,10 +201,36 @@ const resetPassword = async (req, res) => {
 
 // LOGOUT CONTROLLER 
 const logoutUser = async (req, res) => {
-    const user = await User.findOneAndUpdate({ refreshToken: req.cookies.refreshToken }, { refreshToken: null });
-    res.clearCookie("refreshToken");
-    res.json({ message: "Logged out successfully", user: user });
+    try {
+        // CHECK IF REFRESH TOKEN IS PROVIDED IN COOKIES
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) {
+            return res.status(400).json({ message: "No refresh token provided" });
+        }
+
+        // FIND THE USER WITH REFRESH TOKEN 
+        const user = await User.findOne({ refreshToken });
+        console.log("User found for logout:", user);
+
+        if (!user) {
+            return res.status(400).json({ message: "Invalid refresh token (User not found)" });
+        }
+
+        // REMOVE REFRESH TOKEN 
+        user.refreshToken = null;
+        await user.save();
+
+        // CLEAR REFRESH TOKEN FROM COOKIES 
+        res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+
+        res.json({ message: "Logged out successfully" });
+
+    } catch (error) {
+        console.error("Logout Error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
 };
+
 
 // EXPORTING THE CONTROLLERS 
 module.exports = {
