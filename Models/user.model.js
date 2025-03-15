@@ -1,9 +1,10 @@
+// IMPORTING THE REQUIREMENTS
 const mongoose = require("mongoose")
 
+// CREATING THE USER MODEL WITH MONGOOSE SCHEMA
 const userSchema = new mongoose.Schema({
      name :{
          type : String,
-         required: true
      },
      email: {
          type: String,
@@ -13,9 +14,16 @@ const userSchema = new mongoose.Schema({
      password: {
          type: String,
          required: true
+     },
+     otp: String,
+     refreshToken: {
+         type: String,  
+         default: null
      }
-});
+ }, { timestamps: true });
 
+
+// EXPORTING THE USER MODEL FOR USE IN OTHER FILES
 const User = mongoose.model("User" , userSchema);
 
 module.exports = User;
