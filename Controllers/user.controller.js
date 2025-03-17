@@ -41,7 +41,7 @@ const signupUser = async (req, res) => {
 const getAllUser = async (req, res) => {
     try {
         // GETTING ALL USERS FROM THE DATABASE
-        const users = await User.find();
+        const users = await User.find({isDeleted:false});
         res.json(users);
 
     } catch (error) {
@@ -60,6 +60,44 @@ const getUserById = async (req, res) => {
             return res.status(404).send("User not found");
         }
         res.json(user);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error.message);
+
+    }
+}
+// UPDATE USER CONTROLLER 
+
+const updateUser = async (req, res) => {
+    try {
+
+        // GETTING USER BY ID FROM THE DATABASE
+        const user = await User.findByIdAndUpdate(req.userId, req.body, { new: true });
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        res.json({ message: "User updated successfully" });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error.message);
+
+    }
+}
+// DELETE USER CONTROLLER 
+
+const deleteUser = async (req, res) => {
+    try {
+
+        // GETTING USER BY ID FROM THE DATABASE
+        const user = await User.findByIdAndUpdate(req.userId , {isDeleted : true } );
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        res.json({ message: "User deleted successfully" });
 
     } catch (error) {
         console.error(error);
@@ -243,4 +281,6 @@ module.exports = {
     logoutUser,
     forgotPassword,
     resetPassword,
+    updateUser,
+    deleteUser,
 };

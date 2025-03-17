@@ -1,3 +1,4 @@
+// MIDDLEWARE FUNCTION TO EXTRACT USERID 
 const extractUserId = (req, res, next) => {
     const userId = req.cookies.userId; 
 
@@ -9,4 +10,5 @@ const extractUserId = (req, res, next) => {
     next();
 };
 
+// EXPORTING THE MIDDLEWARE FUNCTION
 module.exports = extractUserId;
