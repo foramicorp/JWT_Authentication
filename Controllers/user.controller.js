@@ -55,7 +55,7 @@ const getUserById = async (req, res) => {
     try {
 
         // GETTING USER BY ID FROM THE DATABASE
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(req.user.id , {isDeleted:true});
         if (!user) {
             return res.status(404).send("User not found");
         }
@@ -108,6 +108,8 @@ const softDeleteUser = async (req, res) => {
     }
 }
 
+
+
 // DELETE USER CONTROLLER (HARD DELETE)
 
 const hardDeleteUser = async (req, res) => {
@@ -127,6 +129,25 @@ const hardDeleteUser = async (req, res) => {
 
     }
 }
+
+// RESTORE USER CONTROLLER (UNDO SOFT DELETE)
+const restoreUser = async (req, res) => {
+    try {
+        // FIND USER BY ID AND SET isDeleted TO FALSE
+        const user = await User.findByIdAndUpdate(req.userId, { isDeleted: false }, { new: true });
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        res.json({ message: "User restored successfully" });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error.message);
+    }
+};
+
 
 // LOGIN USER CONTROLLER      
 const loginUser = async (req, res) => {
@@ -308,4 +329,5 @@ module.exports = {
     updateUser,
     softDeleteUser,
     hardDeleteUser,
+    restoreUser,
 };
