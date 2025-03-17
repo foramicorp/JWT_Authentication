@@ -83,12 +83,14 @@ const updateUser = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send(error.message);
+        res.json({ message: "Login and try again " });
+
 
     }
 }
-// DELETE USER CONTROLLER 
+// DELETE USER CONTROLLER (SOFT DELETE)
 
-const deleteUser = async (req, res) => {
+const softDeleteUser = async (req, res) => {
     try {
 
         // GETTING USER BY ID FROM THE DATABASE
@@ -105,6 +107,27 @@ const deleteUser = async (req, res) => {
 
     }
 }
+
+// DELETE USER CONTROLLER (HARD DELETE)
+
+const hardDeleteUser = async (req, res) => {
+    try {
+
+        // FINDING IS USER EXISTS 
+        const user = await User.findByIdAndDelete(req.userId);
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        res.json({ message: "User deleted successfully" });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error.message);
+
+    }
+}
+
 // LOGIN USER CONTROLLER      
 const loginUser = async (req, res) => {
     try {
@@ -261,6 +284,7 @@ const logoutUser = async (req, res) => {
 
         // CLEAR REFRESH TOKEN FROM COOKIES 
         res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+        res.clearCookie("userId", { httpOnly: true, secure: true, sameSite: "Strict" });
 
         res.json({ message: "Logged out successfully" });
 
@@ -282,5 +306,6 @@ module.exports = {
     forgotPassword,
     resetPassword,
     updateUser,
-    deleteUser,
+    softDeleteUser,
+    hardDeleteUser,
 };

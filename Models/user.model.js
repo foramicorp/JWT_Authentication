@@ -17,7 +17,6 @@ const userSchema = new mongoose.Schema({
     },
     otp: String,
     isDeleted: { type: Boolean, default: false },
-    deletedAt: { type: Date, default: null },
     refreshToken: {
         type: String,
         default: null
