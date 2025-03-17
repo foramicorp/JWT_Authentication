@@ -55,7 +55,8 @@ const getUserById = async (req, res) => {
     try {
 
         // GETTING USER BY ID FROM THE DATABASE
-        const user = await User.findById(req.user.id , {isDeleted:true});
+        const user = await User.findById(req.userId );
+
         if (!user) {
             return res.status(404).send("User not found");
         }
