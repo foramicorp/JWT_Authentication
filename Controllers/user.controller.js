@@ -55,7 +55,7 @@ const getUserById = async (req, res) => {
     try {
 
         // GETTING USER BY ID FROM THE DATABASE
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.user.id);
         if (!user) {
             return res.status(404).send("User not found");
         }
@@ -99,8 +99,9 @@ const loginUser = async (req, res) => {
         console.log("User After Saving Refresh Token:", await User.findOne({ email }));
 
         // SETTING COOKIES
-
+  
         res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
+        res.cookie("userId", user._id.toString(), { httpOnly: true, secure: true, sameSite: "Strict" });
         res.json({ message: "Login successful", accessToken });
 
     } catch (error) {
