@@ -5,8 +5,8 @@ require("dotenv").config();
 
 // MIDDLEWARE FUNCTION TO CHECK FOR VALID JWT TOKEN
 const isToken = (req, res, next) => {
-
-    const token = req.cookies.accessToken;
+    
+    const token = req.cookies.refreshToken 
     
     if (!token) return res.status(401).json({ message: "No token, authorization denied" });
     
